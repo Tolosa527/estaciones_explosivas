@@ -92,12 +92,13 @@ const BALLOON = `${IMG}baloon6.webp`;
 const BALLOON_STAGES = 6;
 const KID_FRAMES = [1, 2, 3, 4, 5, 6].map(n => `${IMG}kid${n}.webp`);
 const EXPLOSION = `${IMG}explosion.webp`;
+const SQUISHED_KID = `${IMG}niño_aplstado.webp`;
 
 const $ = id => document.getElementById(id);
 const el = {
   kid: $('kid'), balloon: $('balloon'), explosion: $('explosion'), stage: $('stage'),
   start: $('start'), quiz: $('quiz'), question: $('question'), options: $('options'),
-  feedback: $('feedback'), hint: $('hint'), continue: $('continue'), progress: $('progress'), score: $('score'),
+  feedback: $('feedback'), hint: $('hint'), continue: $('continue'),
   end: $('end'), endMsg: $('endMsg'), restart: $('restart'),
 };
 
@@ -105,9 +106,9 @@ let kidFrames = [];
 let balloonState = 0; // índice 0..5
 let locked = false;
 let current = null;
-let score = 0;
-let questionNumber = 0;
 let lastAnswerCorrect = false;
+let squishedKid = null;
+let impactTimer = null;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const load = src => new Promise(res => {
@@ -120,7 +121,8 @@ const load = src => new Promise(res => {
 async function preload() {
   const frames = await Promise.all(KID_FRAMES.map(load));
   kidFrames = frames.filter(Boolean);
-  await Promise.all([BALLOON, EXPLOSION].map(load));
+  const [, , squished] = await Promise.all([BALLOON, EXPLOSION, SQUISHED_KID].map(load));
+  squishedKid = squished;
   el.kid.src = kidFrames[0] || KID_FRAMES[0];
   el.balloon.src = BALLOON;
   showBalloon();
@@ -182,9 +184,6 @@ function explainQuestion(question, answer) {
 
 function nextQuestion() {
   current = buildQuestion();
-  questionNumber++;
-  el.progress.textContent = `Globo ${balloonState + 1}/${BALLOON_STAGES} · Pregunta ${questionNumber}`;
-  el.score.textContent = `Aciertos: ${score}`;
   el.question.textContent = current.q;
   el.feedback.textContent = '';
   el.feedback.className = '';
@@ -213,7 +212,6 @@ async function answer(btn, opt) {
   el.hint.disabled = true;
   const ok = current.answers.includes(opt);
   lastAnswerCorrect = ok;
-  if (ok) score++;
   [...el.options.children].forEach(b => {
     b.disabled = true;
     if (current.answers.includes(b.textContent)) b.classList.add('ok');
@@ -226,7 +224,6 @@ async function answer(btn, opt) {
     el.feedback.className = 'correct';
     el.feedback.textContent = `✓ ¡Correcto! / Zuzen!\n${explainQuestion(current.q, current.correct)}`;
   }
-  el.score.textContent = `Aciertos: ${score}`;
   el.continue.textContent = balloonState === BALLOON_STAGES - 1 && ok
     ? '💥 Ver explosión / Ikusi eztanda'
     : 'Continuar / Jarraitu';
@@ -250,16 +247,39 @@ function explode() {
   el.quiz.hidden = true;
   el.end.hidden = false;
   el.endMsg.textContent = '💥 ¡BOOM! ¡Has explotado el globo! / Zorionak!';
+  if (squishedKid) {
+    impactTimer = setTimeout(() => {
+      el.kid.src = squishedKid;
+      el.kid.classList.add('squished');
+      impactTimer = null;
+    }, 260);
+  }
+}
+
+function resetStage() {
+  if (impactTimer) {
+    clearTimeout(impactTimer);
+    impactTimer = null;
+  }
+  balloonState = 0;
+  el.explosion.hidden = true;
+  el.stage.classList.remove('exploded');
+  el.kid.classList.remove('squished');
+  el.kid.src = kidFrames[0] || KID_FRAMES[0];
+  showBalloon();
+  locked = false;
+  lastAnswerCorrect = false;
+}
+
+function returnToMain() {
+  resetStage();
+  el.start.hidden = false;
+  el.quiz.hidden = true;
+  el.end.hidden = true;
 }
 
 function startGame() {
-  balloonState = 0;
-  score = 0;
-  questionNumber = 0;
-  el.explosion.hidden = true;
-  el.stage.classList.remove('exploded');
-  el.kid.src = kidFrames[0] || KID_FRAMES[0];
-  showBalloon();
+  resetStage();
   el.start.hidden = true;
   el.end.hidden = true;
   el.quiz.hidden = false;
@@ -270,4 +290,10 @@ el.start.onclick = startGame;
 el.restart.onclick = startGame;
 el.hint.onclick = showHint;
 el.continue.onclick = continueAfterAnswer;
+document.addEventListener('click', event => {
+  if (!el.stage.classList.contains('exploded')) return;
+  event.preventDefault();
+  event.stopPropagation();
+  returnToMain();
+}, true);
 preload();
