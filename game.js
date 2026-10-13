@@ -113,7 +113,7 @@ async function animateKid() {
 }
 
 function showBalloon() {
-  const scale = (0.42 + balloonState * 0.116).toFixed(3);
+  const scale = (0.42 + balloonState * 0.15).toFixed(3);
   el.balloon.style.setProperty('--balloon-scale', scale);
 }
 

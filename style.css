@@ -29,8 +29,8 @@ h1 small { display: block; font-size: .5em; color: #fff36b; text-shadow: 2px 2px
 }
 #stage img { max-height: 96%; object-fit: contain; }
 #kid {
-  height: 88%;
-  max-width: 40%;
+  height: 62%;
+  max-width: 28%;
   transform: translateX(-1%);
 }
 #balloon {
