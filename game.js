@@ -98,7 +98,8 @@ const $ = id => document.getElementById(id);
 const el = {
   kid: $('kid'), balloon: $('balloon'), explosion: $('explosion'), stage: $('stage'),
   start: $('start'), quiz: $('quiz'), question: $('question'), options: $('options'),
-  feedback: $('feedback'), hint: $('hint'), continue: $('continue'),
+  feedback: $('feedback'), hint: $('hint'), hintPrompt: $('hintPrompt'),
+  continue: $('continue'),
   end: $('end'), endMsg: $('endMsg'), restart: $('restart'),
 };
 
@@ -109,6 +110,7 @@ let current = null;
 let lastAnswerCorrect = false;
 let squishedKid = null;
 let impactTimer = null;
+let hintTimer = null;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const load = src => new Promise(res => {
@@ -131,6 +133,20 @@ async function preload() {
 async function animateKid() {
   for (const f of kidFrames) { el.kid.src = f; await sleep(300); }
   if (kidFrames.length) el.kid.src = kidFrames[0];
+}
+
+function stopQuestionTimer() {
+  clearTimeout(hintTimer);
+  hintTimer = null;
+}
+
+function startQuestionTimer() {
+  stopQuestionTimer();
+  el.hintPrompt.hidden = true;
+  hintTimer = setTimeout(() => {
+    if (!locked && !el.quiz.hidden) el.hintPrompt.hidden = false;
+    hintTimer = null;
+  }, 20000);
 }
 
 function showBalloon() {
@@ -190,6 +206,7 @@ function nextQuestion() {
   el.options.innerHTML = '';
   el.hint.disabled = false;
   el.continue.hidden = true;
+  startQuestionTimer();
   current.options.forEach(opt => {
     const b = document.createElement('button');
     b.textContent = opt;
@@ -201,14 +218,18 @@ function nextQuestion() {
 
 function showHint() {
   if (locked) return;
+  stopQuestionTimer();
   el.feedback.className = 'hint';
   el.feedback.textContent = current.hint;
   el.hint.disabled = true;
+  el.hintPrompt.hidden = true;
 }
 
 async function answer(btn, opt) {
   if (locked) return;
   locked = true;
+  stopQuestionTimer();
+  el.hintPrompt.hidden = true;
   el.hint.disabled = true;
   const ok = current.answers.includes(opt);
   lastAnswerCorrect = ok;
@@ -257,6 +278,7 @@ function explode() {
 }
 
 function resetStage() {
+  stopQuestionTimer();
   if (impactTimer) {
     clearTimeout(impactTimer);
     impactTimer = null;

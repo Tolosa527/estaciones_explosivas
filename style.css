@@ -96,8 +96,12 @@ h1 small { display: block; font-size: .5em; color: #fff36b; text-shadow: 2px 2px
   45% { opacity: .65; }
   100% { opacity: 0; }
 }
+@keyframes hintPulse {
+  50% { transform: translateY(-3px) scale(1.03); }
+}
 
 #panel {
+  position: relative;
   display: flex; flex-direction: column; justify-content: center; align-items: stretch;
   text-align: left; overflow-y: auto; padding: clamp(18px, 3vw, 34px);
   height: calc(100% - 200px); width: calc(100% - 8px);
@@ -129,13 +133,61 @@ button:disabled { cursor: default; opacity: .8; }
 #options button.bad { background: #d33; box-shadow: 0 3px 0 #8a1c1c; }
 #panel > button { align-self: center; font-size: 1.1rem; }
 #end button { align-self: center; font-size: 1.1rem; }
-#hint { align-self: center; margin-top: 10px; background: linear-gradient(135deg, #a855f7, #6366f1); box-shadow: 0 5px 0 #5540a5; }
+#hint {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  box-shadow: 0 5px 0 #5540a5;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+#hint:hover:not(:disabled) { transform: translateY(-2px) rotate(-8deg) scale(1.08); }
+#hintPrompt {
+  position: absolute;
+  top: 66px;
+  right: 25px;
+  width: 30px;
+  height: 42px;
+  pointer-events: none;
+  animation: hintPulse .9s ease-in-out infinite;
+}
+#hintPrompt[hidden] { display: none; }
+.hint-arrow {
+  display: block;
+  width: 30px;
+  height: 42px;
+  background: linear-gradient(180deg, #ffcf5c, #ff6b6b);
+  clip-path: polygon(50% 0, 100% 30%, 68% 30%, 68% 100%, 32% 100%, 32% 30%, 0 30%);
+  filter: drop-shadow(0 4px 0 #c94b62) drop-shadow(0 5px 5px #7654c766);
+}
 #feedback {
   min-height: 1.4em; margin: 10px 0 12px; font-weight: bold; color: #d34b83;
   white-space: pre-line; line-height: 1.35;
 }
 #feedback.correct { color: #15803d; }
 #feedback.wrong { color: #c2410c; }
-#feedback.hint { color: #7654c7; }
+#feedback.hint {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  right: 80px;
+  z-index: 2;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  color: #7654c7;
+  background: #fff;
+  box-shadow: 0 3px 0 #c8b4f2;
+  text-align: left;
+}
 #continue { align-self: center; background: linear-gradient(135deg, #22c55e, #14b8a6); box-shadow: 0 5px 0 #147c62; }
 #endMsg { font-size: 1.4rem; font-weight: bold; color: #d34b83; }

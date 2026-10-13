@@ -15,7 +15,12 @@
       <div id="quiz" hidden>
         <p id="question"></p>
         <div id="options"></div>
-        <button id="hint">Pista / Argibidea</button>
+        <button id="hint" type="button" aria-label="Mostrar pista / Argibidea erakutsi" title="Pista / Argibidea">
+          <span aria-hidden="true">💡</span>
+        </button>
+        <span id="hintPrompt" hidden aria-hidden="true">
+          <span class="hint-arrow"></span>
+        </span>
         <p id="feedback" aria-live="polite"></p>
         <button id="continue" hidden>Continuar / Jarraitu</button>
       </div>
