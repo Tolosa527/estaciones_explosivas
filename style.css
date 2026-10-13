@@ -129,11 +129,13 @@ button:disabled { cursor: default; opacity: .8; }
 #options button.bad { background: #d33; box-shadow: 0 3px 0 #8a1c1c; }
 #panel > button { align-self: center; font-size: 1.1rem; }
 #end button { align-self: center; font-size: 1.1rem; }
+#hint { align-self: center; margin-top: 10px; background: linear-gradient(135deg, #a855f7, #6366f1); box-shadow: 0 5px 0 #5540a5; }
 #feedback {
   min-height: 1.4em; margin: 10px 0 12px; font-weight: bold; color: #d34b83;
   white-space: pre-line; line-height: 1.35;
 }
 #feedback.correct { color: #15803d; }
 #feedback.wrong { color: #c2410c; }
+#feedback.hint { color: #7654c7; }
 #continue { align-self: center; background: linear-gradient(135deg, #22c55e, #14b8a6); box-shadow: 0 5px 0 #147c62; }
 #endMsg { font-size: 1.4rem; font-weight: bold; color: #d34b83; }

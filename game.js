@@ -24,39 +24,58 @@ const LANG = ['Español', 'Euskera'];
 const mod = (n, m) => ((n % m) + m) % m;
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 const shuffle = arr => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+const makeHint = (answer, clue) => {
+  const letters = [...answer];
+  return `${clue} Empieza por «${letters[0].toLocaleUpperCase('es')}» y tiene ${letters.length} letras.`;
+};
 
-// Cada generador devuelve { q, answer, pool }
+// Cada generador devuelve { q, answer, pool, hint }
 const generators = [
   () => { const l = pick([ES, EU]), m = pick(MONTHS); const o = 1 - l;
-    return { q: `¿Cómo se dice ${m[l]} en ${LANG[o]}?`, answer: m[o], pool: MONTHS.map(x => x[o]) }; },
+    return { q: `¿Cómo se dice ${m[l]} en ${LANG[o]}?`, answer: m[o], pool: MONTHS.map(x => x[o]),
+      hint: answer => makeHint(answer, `Es un mes del año en ${LANG[o]}.`) }; },
   () => { const l = pick([ES, EU]), d = pick(DAYS); const o = 1 - l;
-    return { q: `¿Cómo se dice ${d[l]} en ${LANG[o]}?`, answer: d[o], pool: DAYS.map(x => x[o]) }; },
+    return { q: `¿Cómo se dice ${d[l]} en ${LANG[o]}?`, answer: d[o], pool: DAYS.map(x => x[o]),
+      hint: answer => makeHint(answer, `Es un día de la semana en ${LANG[o]}.`) }; },
   () => { const l = pick([ES, EU]), s = pick(SEASONS); const o = 1 - l;
-    return { q: `¿Cómo se dice ${s[l]} en ${LANG[o]}?`, answer: s[o], pool: SEASONS.map(x => x[o]) }; },
+    return { q: `¿Cómo se dice ${s[l]} en ${LANG[o]}?`, answer: s[o], pool: SEASONS.map(x => x[o]),
+      hint: answer => makeHint(answer, `Es una estación del año en ${LANG[o]}.`) }; },
   () => { const l = pick([ES, EU]);
-    return { q: `¿Cuál es el primer mes del año? (en ${LANG[l]})`, answer: MONTHS[0][l], pool: MONTHS.map(x => x[l]) }; },
+    return { q: `¿Cuál es el primer mes del año? (en ${LANG[l]})`, answer: MONTHS[0][l], pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, 'Es el mes que abre el calendario anual.') }; },
   () => { const l = pick([ES, EU]);
-    return { q: `¿Cuál es el último mes del año? (en ${LANG[l]})`, answer: MONTHS[11][l], pool: MONTHS.map(x => x[l]) }; },
+    return { q: `¿Cuál es el último mes del año? (en ${LANG[l]})`, answer: MONTHS[11][l], pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, 'Es el mes que cierra el calendario anual.') }; },
   () => { const l = pick([ES, EU]), i = Math.floor(Math.random() * 12);
-    return { q: `¿Qué mes viene después de ${MONTHS[i][l]}? (en ${LANG[l]})`, answer: MONTHS[mod(i + 1, 12)][l], pool: MONTHS.map(x => x[l]) }; },
+    return { q: `¿Qué mes viene después de ${MONTHS[i][l]}? (en ${LANG[l]})`, answer: MONTHS[mod(i + 1, 12)][l], pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Avanza un mes desde ${MONTHS[i][l]} en el calendario.`) }; },
   () => { const l = pick([ES, EU]), i = Math.floor(Math.random() * 12);
-    return { q: `¿Qué mes viene antes de ${MONTHS[i][l]}? (en ${LANG[l]})`, answer: MONTHS[mod(i - 1, 12)][l], pool: MONTHS.map(x => x[l]) }; },
+    return { q: `¿Qué mes viene antes de ${MONTHS[i][l]}? (en ${LANG[l]})`, answer: MONTHS[mod(i - 1, 12)][l], pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Retrocede un mes desde ${MONTHS[i][l]} en el calendario.`) }; },
   () => { const l = pick([ES, EU]), i = Math.floor(Math.random() * 7);
-    return { q: `¿Qué día viene después de ${DAYS[i][l]}? (en ${LANG[l]})`, answer: DAYS[mod(i + 1, 7)][l], pool: DAYS.map(x => x[l]) }; },
+    return { q: `¿Qué día viene después de ${DAYS[i][l]}? (en ${LANG[l]})`, answer: DAYS[mod(i + 1, 7)][l], pool: DAYS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Sigue el orden de la semana a partir de ${DAYS[i][l]}.`) }; },
   () => { const l = pick([ES, EU]), i = Math.floor(Math.random() * 7);
-    return { q: `¿Qué día viene antes de ${DAYS[i][l]}? (en ${LANG[l]})`, answer: DAYS[mod(i - 1, 7)][l], pool: DAYS.map(x => x[l]) }; },
+    return { q: `¿Qué día viene antes de ${DAYS[i][l]}? (en ${LANG[l]})`, answer: DAYS[mod(i - 1, 7)][l], pool: DAYS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Retrocede en el orden de la semana desde ${DAYS[i][l]}.`) }; },
   () => { const l = pick([ES, EU]), n = Math.floor(Math.random() * 7);
-    return { q: `¿Qué día de la semana es el número ${n + 1}? (en ${LANG[l]})`, answer: DAYS[n][l], pool: DAYS.map(x => x[l]) }; },
+    return { q: `¿Qué día de la semana es el número ${n + 1}? (en ${LANG[l]})`, answer: DAYS[n][l], pool: DAYS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Cuenta ${n + 1} días empezando por lunes.`) }; },
   () => { const l = pick([ES, EU]), m = Math.floor(Math.random() * 12);
-    return { q: `¿En qué estación está ${MONTHS[m][l]}? (en ${LANG[l]})`, answer: SEASONS[SEASON_OF_MONTH[m]][l], pool: SEASONS.map(x => x[l]) }; },
+    return { q: `¿En qué estación está ${MONTHS[m][l]}? (en ${LANG[l]})`, answer: SEASONS[SEASON_OF_MONTH[m]][l], pool: SEASONS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Recuerda qué estación incluye a ${MONTHS[m][l]} en el hemisferio norte.`) }; },
   () => { const l = pick([ES, EU]), s = pick(SEASONS);
-    return { q: `Nombra un mes de ${s[l]} (en ${LANG[l]})`, answer: s[2].map(m => MONTHS[m][l]), pool: MONTHS.map(x => x[l]) }; },
+    return { q: `Nombra un mes de ${s[l]} (en ${LANG[l]})`, answer: s[2].map(m => MONTHS[m][l]), pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Es uno de los tres meses consecutivos de ${s[l]}.`) }; },
   () => { const l = pick([ES, EU]), s = pick(SEASONS);
-    return { q: `¿Cuál es el primer mes de ${s[l]}? (en ${LANG[l]})`, answer: MONTHS[s[2][0]][l], pool: MONTHS.map(x => x[l]) }; },
+    return { q: `¿Cuál es el primer mes de ${s[l]}? (en ${LANG[l]})`, answer: MONTHS[s[2][0]][l], pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Busca el mes que inicia ${s[l]} en el hemisferio norte.`) }; },
   () => { const l = pick([ES, EU]), s = pick(SEASONS);
-    return { q: `¿Cuál es el último mes de ${s[l]}? (en ${LANG[l]})`, answer: MONTHS[s[2][2]][l], pool: MONTHS.map(x => x[l]) }; },
+    return { q: `¿Cuál es el último mes de ${s[l]}? (en ${LANG[l]})`, answer: MONTHS[s[2][2]][l], pool: MONTHS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Busca el mes que termina ${s[l]} en el hemisferio norte.`) }; },
   () => { const l = pick([ES, EU]), i = Math.floor(Math.random() * 4);
-    return { q: `¿Qué estación viene después de ${SEASONS[i][l]}? (en ${LANG[l]})`, answer: SEASONS[mod(i + 1, 4)][l], pool: SEASONS.map(x => x[l]) }; },
+    return { q: `¿Qué estación viene después de ${SEASONS[i][l]}? (en ${LANG[l]})`, answer: SEASONS[mod(i + 1, 4)][l], pool: SEASONS.map(x => x[l]),
+      hint: answer => makeHint(answer, `Sigue el ciclo anual después de ${SEASONS[i][l]}.`) }; },
 ];
 
 function buildQuestion() {
@@ -64,7 +83,7 @@ function buildQuestion() {
   const answers = Array.isArray(g.answer) ? g.answer : [g.answer];
   const correct = pick(answers);
   const wrong = shuffle([...new Set(g.pool)].filter(x => !answers.includes(x))).slice(0, 3);
-  return { q: g.q, correct, answers, options: shuffle([correct, ...wrong]) };
+  return { q: g.q, correct, answers, hint: g.hint(correct), options: shuffle([correct, ...wrong]) };
 }
 
 // Imágenes
@@ -79,7 +98,7 @@ const $ = id => document.getElementById(id);
 const el = {
   kid: $('kid'), balloon: $('balloon'), explosion: $('explosion'), stage: $('stage'),
   start: $('start'), quiz: $('quiz'), question: $('question'), options: $('options'),
-  feedback: $('feedback'), continue: $('continue'),
+  feedback: $('feedback'), hint: $('hint'), continue: $('continue'),
   end: $('end'), endMsg: $('endMsg'), restart: $('restart'),
 };
 
@@ -169,6 +188,7 @@ function nextQuestion() {
   el.feedback.textContent = '';
   el.feedback.className = '';
   el.options.innerHTML = '';
+  el.hint.disabled = false;
   el.continue.hidden = true;
   current.options.forEach(opt => {
     const b = document.createElement('button');
@@ -179,9 +199,17 @@ function nextQuestion() {
   locked = false;
 }
 
+function showHint() {
+  if (locked) return;
+  el.feedback.className = 'hint';
+  el.feedback.textContent = current.hint;
+  el.hint.disabled = true;
+}
+
 async function answer(btn, opt) {
   if (locked) return;
   locked = true;
+  el.hint.disabled = true;
   const ok = current.answers.includes(opt);
   lastAnswerCorrect = ok;
   [...el.options.children].forEach(b => {
@@ -260,6 +288,7 @@ function startGame() {
 
 el.start.onclick = startGame;
 el.restart.onclick = startGame;
+el.hint.onclick = showHint;
 el.continue.onclick = continueAfterAnswer;
 document.addEventListener('click', event => {
   if (!el.stage.classList.contains('exploded')) return;
