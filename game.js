@@ -78,7 +78,7 @@ const $ = id => document.getElementById(id);
 const el = {
   kid: $('kid'), balloon: $('balloon'), explosion: $('explosion'), stage: $('stage'),
   start: $('start'), quiz: $('quiz'), question: $('question'), options: $('options'),
-  feedback: $('feedback'), continue: $('continue'), progress: $('progress'), score: $('score'),
+  feedback: $('feedback'), hint: $('hint'), continue: $('continue'), progress: $('progress'), score: $('score'),
   end: $('end'), endMsg: $('endMsg'), restart: $('restart'),
 };
 
@@ -170,6 +170,7 @@ function nextQuestion() {
   el.feedback.textContent = '';
   el.feedback.className = '';
   el.options.innerHTML = '';
+  el.hint.disabled = false;
   el.continue.hidden = true;
   current.options.forEach(opt => {
     const b = document.createElement('button');
@@ -180,9 +181,20 @@ function nextQuestion() {
   locked = false;
 }
 
+function showHint() {
+  if (locked) return;
+  const answer = current.correct;
+  const letters = [...answer];
+  const firstLetter = letters[0].toLocaleUpperCase('es');
+  el.feedback.className = 'hint';
+  el.feedback.textContent = `Pista: empieza por «${firstLetter}» y tiene ${letters.length} letras. / «${firstLetter}» letraz hasten da eta ${letters.length} letra ditu.`;
+  el.hint.disabled = true;
+}
+
 async function answer(btn, opt) {
   if (locked) return;
   locked = true;
+  el.hint.disabled = true;
   const ok = current.answers.includes(opt);
   lastAnswerCorrect = ok;
   if (ok) score++;
@@ -240,5 +252,6 @@ function startGame() {
 
 el.start.onclick = startGame;
 el.restart.onclick = startGame;
+el.hint.onclick = showHint;
 el.continue.onclick = continueAfterAnswer;
 preload();
