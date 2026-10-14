@@ -1,6 +1,6 @@
 * { box-sizing: border-box; }
 body {
-  margin: 0; min-height: 100vh;
+  margin: 0; min-height: 100vh; min-height: 100dvh;
   font-family: "Trebuchet MS", system-ui, sans-serif;
   background:
     radial-gradient(circle at 8% 12%, #fff36b 0 4%, transparent 5%),
@@ -9,7 +9,7 @@ body {
     linear-gradient(135deg, #69d5ff 0%, #bba7ff 48%, #ffd4ec 100%);
   color: #27346d;
 }
-main { height: 100vh; max-width: 1600px; margin: 0 auto; padding: 8px 16px; text-align: center; display: flex; flex-direction: column; overflow: hidden; }
+main { height: 100vh; height: 100dvh; max-width: 1600px; margin: 0 auto; padding: 8px 16px; text-align: center; display: flex; flex-direction: column; overflow: hidden; }
 #layout { flex: 1; width: min(100%, 1380px); min-height: 0; margin: 0 auto; display: grid; grid-template-columns: minmax(280px, 1fr) 2fr; gap: 24px; }
 h1 {
   margin: 4px 0 10px; font-size: clamp(1.45rem, 3vw, 2.5rem);
@@ -112,6 +112,7 @@ h1 small { display: block; font-size: .5em; color: #fff36b; text-shadow: 2px 2px
 }
 button {
   font: inherit; font-weight: bold; cursor: pointer;
+  min-height: 48px;
   padding: 12px 22px; border: 3px solid #fff; border-radius: 18px;
   background: linear-gradient(135deg, #ff6b6b, #ff9f43); color: #fff;
   text-shadow: 1px 1px 0 #a94455; box-shadow: 0 5px 0 #d14d50, 0 7px 12px #9c4a5a55;
@@ -191,3 +192,175 @@ button:disabled { cursor: default; opacity: .8; }
 }
 #continue { align-self: center; background: linear-gradient(135deg, #22c55e, #14b8a6); box-shadow: 0 5px 0 #147c62; }
 #endMsg { font-size: 1.4rem; font-weight: bold; color: #d34b83; }
+
+@media (max-width: 700px) {
+  main {
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  h1 {
+    flex: 0 0 auto;
+    margin: 2px 0 8px;
+    font-size: clamp(1.25rem, 7vw, 1.8rem);
+    line-height: 1.05;
+  }
+
+  #layout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  #stage {
+    order: 1;
+    flex: 0 0 clamp(150px, 30dvh, 245px);
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 8px;
+    border-width: 4px;
+    border-radius: 24px;
+  }
+
+  #stage img {
+    max-height: 100%;
+  }
+
+  #kid {
+    height: 72%;
+    max-width: 36%;
+  }
+
+  #balloon {
+    width: 28%;
+    max-width: 34%;
+    height: 82%;
+  }
+
+  #panel {
+    order: 2;
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 18px 14px 16px;
+    border-width: 4px;
+    border-radius: 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #question {
+    margin: 0 0 12px;
+    padding: 12px 10px;
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
+  }
+
+  #options {
+    gap: 8px;
+  }
+
+  #options button,
+  #continue,
+  #start,
+  #restart {
+    width: 100%;
+    min-height: 52px;
+    padding: 11px 14px;
+  }
+
+  #feedback {
+    margin: 8px 0 10px;
+    font-size: .95rem;
+  }
+
+  #hint {
+    top: 10px;
+    right: 10px;
+    width: 46px;
+    height: 46px;
+  }
+
+  #hintPrompt {
+    top: 60px;
+    right: 18px;
+  }
+
+  #feedback.hint {
+    top: 10px;
+    left: 14px;
+    right: 64px;
+    padding: 7px 8px;
+    font-size: .88rem;
+  }
+
+  #endMsg {
+    margin: 0 0 18px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 380px), (max-height: 620px) and (max-width: 700px) {
+  main {
+    padding-top: max(4px, env(safe-area-inset-top));
+  }
+
+  h1 {
+    margin-bottom: 5px;
+    font-size: clamp(1.1rem, 6vw, 1.45rem);
+  }
+
+  h1 small {
+    display: inline;
+    margin-left: .25em;
+  }
+
+  #layout {
+    gap: 7px;
+  }
+
+  #stage {
+    flex-basis: clamp(112px, 24dvh, 170px);
+  }
+
+  #panel {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+
+  #question {
+    padding: 9px 8px;
+    margin-bottom: 8px;
+  }
+
+  #options {
+    gap: 6px;
+  }
+
+  #options button,
+  #continue,
+  #start,
+  #restart {
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+
+  #feedback {
+    margin: 5px 0 7px;
+    font-size: .88rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
